@@ -1,0 +1,18 @@
+#!/bin/sh
+
+cat << EOF
+Usage: run this docker image with name of script and its arguments, i.e.:
+
+docker run phone alice 12345 - will call 12345 using SIP account of alice.
+
+Available scripts:
+------------------
+dial account_name destination       - dial given destination from selected account;
+register account_name               - just performs SIP register and waiting for user input
+answer account_name                 - same as 'register', but will auto-answer calls
+play account_name path/to/audio.wav - register SIP account, auto-answer call and then play given .wav file
+broadcast account_name destination path/to/audio.wav - dial given destination from selected account, playback audio to the answered party;
+
+tts FILENAME some announcement      - record TTS (text to speech) announcement to the FILENAME.wav
+
+EOF

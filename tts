@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [ "$#" == "0" ]; then
+	echo "It requires command-line arguments: wav-filename (no-ext) and IVR announcement."
+	echo "I.e. files ONE-TWO-THREE-orig.wav and ONE-TWO-THREE.wav will be created with following arguments:"
+	echo
+	echo "./ivr ONE-TWO-THREE First three digits one two three"
+	echo
+  exit 1
+fi
+
+# ivr WAVFILE_NOEXT text to say
+WAVFILE=$1
+shift
+PHRASE="$@"
+
+set -xe
+
+echo "Recording ${WAVFILE}.wav"
+echo "================================================================================"
+
+espeak -ven+f3 -k5 -s105 -w ${WAVFILE}-orig.wav -z "$PHRASE"
+ffmpeg -y -i ${WAVFILE}-orig.wav -ar 8000 -ac 1 -ab 64K ${WAVFILE}.wav
