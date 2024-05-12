@@ -3,8 +3,8 @@
 SIP_USERNAME=$1
 
 if [ "${SIP_USERNAME}" == "" ]; then
-  echo "Missing CLI argument: SIP_USERNAME. Exiting"
-  exit 1
+	echo "Missing CLI argument: SIP_USERNAME. Exiting"
+	exit 1
 fi
 
 SIP_SERVER_HOST=${SIP_SERVER_HOST:-asterisk}
@@ -20,33 +20,33 @@ RTP_PORT=$(shuf -i 56001-59999 -n 1)
 
 # https://stackoverflow.com/questions/48338005/how-to-hang-up-call-in-pjsip-while-its-ringing
 pjsua \
-  --log-level=3 \
-  --app-log-level=3 \
-  --no-stderr \
-  --color \
-  --light-bg \
-  --use-cli \
-  --null-audio \
-  --snd-auto-close=0 \
-  --max-calls=15 \
-  --no-vad \
-  --use-compact-form \
-  --reg-timeout=90 \
-  --rereg-delay=90 \
-  --use-srtp=0 \
-  --srtp-secure=0 \
-  --rtcp-mux \
-  --use-timer=1 \
-  --reg-use-proxy=3 \
-  --auto-update-nat=1 \
-  --disable-stun \
-  --local-port=${LOCAL_PORT} \
-  --rtp-port=${RTP_PORT} \
-  --realm="*" \
-  --registrar="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
-  --proxy="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
-  --outbound="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
-  --id="sip:${SIP_USERNAME}@${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
-  --username="${SIP_USERNAME}" \
-  --password="${SIP_PASSWORD}" \
-  --auto-answer=603
+	--log-level=3 \
+	--app-log-level=3 \
+	--no-stderr \
+	--color \
+	--light-bg \
+	--use-cli \
+	--null-audio \
+	--snd-auto-close=0 \
+	--max-calls=4 \
+	--no-vad \
+	--use-compact-form \
+	--reg-timeout=90 \
+	--rereg-delay=90 \
+	--use-srtp=0 \
+	--srtp-secure=0 \
+	--rtcp-mux \
+	--use-timer=1 \
+	--reg-use-proxy=3 \
+	--auto-update-nat=1 \
+	--disable-stun \
+	--local-port=${LOCAL_PORT} \
+	--rtp-port=${RTP_PORT} \
+	--realm="*" \
+	--registrar="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+	--proxy="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+	--outbound="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+	--id="sip:${SIP_USERNAME}@${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+	--username="${SIP_USERNAME}" \
+	--password="${SIP_PASSWORD}" \
+	--auto-answer=603

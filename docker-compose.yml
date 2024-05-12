@@ -1,0 +1,15 @@
+services:
+  talkingpet:
+    container_name: talkingpet
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./recordings:/recordings
+    # network_mode: host
+    env_file: .env
+    environment:
+      - SIP_SERVER_HOST=${SIP_SERVER_HOST:-127.0.0.1}
+      - SIP_SERVER_PORT=${SIP_SERVER_PORT:-5060}
+      - SIP_SERVER_TRANSPORT=${SIP_SERVER_TRANSPORT:-udp}
+      - SIP_PASSWORD=${SIP_PASSWORD:-1234}

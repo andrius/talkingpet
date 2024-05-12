@@ -3,22 +3,22 @@
 SIP_USERNAME=$1
 
 if [ "${SIP_USERNAME}" == "" ]; then
-  echo "Missing CLI argument: SIP_USERNAME. Exiting"
-  exit 1
+	echo "Missing CLI argument: SIP_USERNAME. Exiting"
+	exit 1
 fi
 
-SIP_SERVER_HOST=${SIP_SERVER_HOST:-asterisk}
-SIP_SERVER_PORT=5060
-SIP_PASSWORD=${SIP_PASSWORD:-asterisk}
+SIP_SERVER_HOST="${SIP_SERVER_HOST:-asterisk}"
+SIP_SERVER_PORT="5060"
+SIP_PASSWORD="${SIP_PASSWORD:-asterisk}"
 
 # udp, tcp
-SIP_TRANSPORT=${SIP_TRANSPORT:-udp}
+SIP_TRANSPORT="${SIP_TRANSPORT:-udp}"
 
 # random ports in a range
-LOCAL_PORT=$(shuf -i 50001-55999 -n 1)
-RTP_PORT=$(shuf -i 56001-59999 -n 1)
+LOCAL_SIP_PORT="${LOCAL_SIP_PORT:-$(shuf -i 50001-55999 -n 1)}"
+LOCAL_RTP_PORT="${LOCAL_RTP_PORT:-$(shuf -i 56001-59999 -n 1)}"
 
-pjsua \
+PJSUA_OPTIONS=" \
   --log-level=3 \
   --app-log-level=3 \
   --no-stderr \
@@ -27,7 +27,7 @@ pjsua \
   --use-cli \
   --null-audio \
   --snd-auto-close=0 \
-  --max-calls=15 \
+  --max-calls=4 \
   --no-vad \
   --use-compact-form \
   --reg-timeout=90 \
@@ -39,14 +39,20 @@ pjsua \
   --reg-use-proxy=3 \
   --auto-update-nat=1 \
   --disable-stun \
-  --local-port=${LOCAL_PORT} \
-  --rtp-port=${RTP_PORT} \
+  --local-port=${LOCAL_SIP_PORT} \
+  --rtp-port=${LOCAL_RTP_PORT} \
   --realm="*" \
-  --registrar="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
-  --proxy="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
-  --outbound="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
-  --id="sip:${SIP_USERNAME}@${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+  --registrar="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
+transport=${SIP_TRANSPORT}" \
+  --proxy="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
+transport=${SIP_TRANSPORT}" \
+  --outbound="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
+transport=${SIP_TRANSPORT}" \
+  --id="sip:${SIP_USERNAME}@${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
+transport=${SIP_TRANSPORT}" \
   --username="${SIP_USERNAME}" \
   --password="${SIP_PASSWORD}" \
-  --auto-answer=200 \
-  --duration=300
+"
+pjsua $PJSUA_OPTIONS \
+	--auto-answer=200 \
+	--duration=300
