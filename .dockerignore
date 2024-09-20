@@ -2,4 +2,4 @@ Dockerfile
 build.sh
 generate.sh
 *.wav
-
+.gitignore

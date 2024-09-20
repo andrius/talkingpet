@@ -1,106 +1,80 @@
-talkingpet
-==========
+# TalkingPet
 
-As a voice systems developers we often manually test different use cases.
-Testing with multiple actors could is complicated (i.e. Alice calls Bob, who
-add a Carol to the call)
+As voice system developers, we often manually test different use cases. Testing with multiple actors can be complicated (i.e., Alice calls Bob, who adds Carol to the call).
 
-Here is a micro-tool, based on [PJSUA SIP client](https://www.pjsip.org/pjsua.htm).
+Here is a micro-tool based on the [PJSUA SIP client](https://www.pjsip.org/pjsua.htm).
 
-# Why Talking Pet?
+## Why TalkingPet?
 
-The name of alien from the [famous computer game](https://en.wikipedia.org/wiki/Star_Control_II)
+The name is inspired by an alien from the [famous computer game](https://en.wikipedia.org/wiki/Star_Control_II).
 
-![talkingpet](./docs/pics/talkingpet.jpg)
+![Talking pet](./docs/pics/talkingpet.jpg)
 
-# Usage instructions
+## Usage Instructions
 
-1) Build it first time:
+1. Build it for the first time:
+
+   ```bash
+   docker-compose build --force-rm --no-cache --pull talkingpet
+   ```
+
+2. Configure the tool by creating an `.env` file from the provided `.env-sample`.
+
+3. Execute one of the desired scripts:
+
+   - `register SIP_USERNAME`: Register a SIP client and allow the tester to control it using keyboard shortcuts.
+   - `answer SIP_USERNAME`: Register a SIP client and automatically answer incoming calls.
+   - `play SIP_USERNAME /path/to/the/audio.wav`: Register a SIP client, answer incoming calls, and play back the given WAV file.
+   - `dial SIP_USERNAME DESTINATION`: Dial a destination and enable the tester to control the call flow.
+   - `broadcast SIP_USERNAME DESTINATION /path/to/audio.wav`: Dial a destination and play an audio file.
+   - `tts /path/to/the/audio "Some voice announcement"`: Use text-to-speech for announcements.
+
+Use `play` and `broadcast` to test RTP streams and audio quality or to assess call recording functionality by capturing SIP and RTP dumps with the `sngrep` utility and analyzing them with Wireshark.
+
+**IMPORTANT:** Audio files used by `play` and `broadcast` must be converted to a compatible format. The `tts` script handles this, or you can use the `ffmpeg` utility (also within the Docker container):
 
 ```bash
-docker-compose build --force-rm --no-cache --pull talkingpet
-```
-
-2) Configure (create an `.env` file from given `.env-sample`);
-
-3) And then execute one of desired scripts:
-
-- `register SIP_USERNAME` -- register SIP client and let tester control the
-  SIP client using keyboard shortcuts;
-
-- `answer SIP_USERNAME` -- register SIP client and automatically answer incoming
-  calls;
-
-- `play SIP_USERNAME /path/to/the/audio.wav` -- register SIP client, answer
-  incoming calls and playback given wav file;
-
-- `dial SIP_USERNAME DESTINATION` -- dial destination and let tester control
-  call flow;
-
-- `broadcast SIP_USERNAME DESTINATION /path/to/audio.wav` -- dial destination
-  and play audio file;
-
-or
-
-- `tts /path/to/the/audio Some voice announcement`.
-
-Use `play` and `broadcast` to test RTP streams and audio quality or to test
-call recording functionality by capturing SIP+RTP dump with `sngrep` utility and
-analysing it with Wireshark.
-
-IMPORTANT! Audio files used by `play` and `broadcast` should be converted first
-to the compatible format. `tts` script does that or user could using `ffmpeg`
-utility (also within docker container):
-
-```shell
 ffmpeg -y -i SOURCE.wav -ar 8000 -ac 1 -ab 64K CONVERTED.wav
 ```
 
 ## Examples
 
-When inbound call will hit the conference and user on SIP/0001 answer it,
-announcement `/recordings/line_1.wav` will be played back to the calling party:
+When an inbound call reaches the conference and the user on SIP/0001 answers, the `/recordings/line_1.wav` announcement will be played to the calling party:
 
-```shell
+```bash
 docker-compose run --rm --service-ports pjsua play 0001 /recordings/line_1.wav
 ```
 
-Dial 00491234567890 from the trunk, and once Asterisk will answer, start
-playing announcement /recordings/trunk.wav:
+Dial `00491234567890` from the trunk, and as soon as Asterisk answers, start playing the announcement `/recordings/trunk.wav`:
 
-```shell
+```bash
 docker-compose run --rm --service-ports pjsua broadcast trunk 00491234567890 /recordings/trunk.wav
 ```
 
-Use both cases to test call transfers (broadcast as a trunk, receive call as an
-agent 0003 and transfer to the 0001).
+Use both cases to test call transfers (broadcast as a trunk, receive the call as agent 0003, and transfer it to 0001).
 
-# Configuration
+## Configuration
 
-Configuration settings are in the `.env` file. IMPORTANT: except the
-`SIP_USERNAME`, it shares the same configuration options. There is two options
-to provide different credentials, such as a SIP password:
+Configuration settings are in the `.env` file. **IMPORTANT:** Except for `SIP_USERNAME`, it shares the same configuration options. There are two ways to provide different credentials, such as a SIP password:
 
-- to copy whole folder and use different `.env`;
-- or to use `-e KEY=VAL` argument with `docker-compose`:
+- Copy the whole folder and use a different `.env` file.
+- Use the `-e KEY=VAL` argument with `docker-compose`:
 
-    ```shell
-    docker-compose run --rm --service-ports -e SIP_PASSWORD=foobar \
-                   pjsua play 0001 /recordings/line_1.wav
-    ```
+   ```bash
+   docker-compose run --rm --service-ports -e SIP_PASSWORD=foobar \
+                      pjsua play 0001 /recordings/line_1.wav
+   ```
 
+## Troubleshooting
 
-# Troubleshooting
+This test tool is based on Alpine Linux and runs in a Docker container. To troubleshoot, enter the container using:
 
-Test tool is based on Alpine linux and running in a docker, in order to
-troubleshoot, just enter in:
-
-```shell
+```bash
 docker-compose run --rm --service-ports --entrypoint=sh pjsua
 ```
 
-Add necessary tools such as `vim` or `sngrep`:
+You can add necessary tools such as `vim` or `sngrep` using:
 
-```shell
+```bash
 apk add sngrep mc vim
 ```
