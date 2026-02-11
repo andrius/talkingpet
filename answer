@@ -8,11 +8,11 @@ if [ "${SIP_USERNAME}" == "" ]; then
 fi
 
 SIP_SERVER_HOST="${SIP_SERVER_HOST:-asterisk}"
-SIP_SERVER_PORT="5060"
+SIP_SERVER_PORT="${SIP_SERVER_PORT:-5060}"
 SIP_PASSWORD="${SIP_PASSWORD:-asterisk}"
 
 # udp, tcp
-SIP_TRANSPORT="${SIP_TRANSPORT:-udp}"
+SIP_TRANSPORT="${SIP_SERVER_TRANSPORT:-${SIP_TRANSPORT:-udp}}"
 
 # random ports in a range
 LOCAL_SIP_PORT="${LOCAL_SIP_PORT:-$(shuf -i 50001-55999 -n 1)}"
@@ -42,14 +42,10 @@ PJSUA_OPTIONS=" \
   --local-port=${LOCAL_SIP_PORT} \
   --rtp-port=${LOCAL_RTP_PORT} \
   --realm="*" \
-  --registrar="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
-transport=${SIP_TRANSPORT}" \
-  --proxy="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
-transport=${SIP_TRANSPORT}" \
-  --outbound="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
-transport=${SIP_TRANSPORT}" \
-  --id="sip:${SIP_USERNAME}@${SIP_SERVER_HOST}:${SIP_SERVER_PORT}
-transport=${SIP_TRANSPORT}" \
+  --registrar="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+  --proxy="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+  --outbound="sip:${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
+  --id="sip:${SIP_USERNAME}@${SIP_SERVER_HOST}:${SIP_SERVER_PORT};transport=${SIP_TRANSPORT}" \
   --username="${SIP_USERNAME}" \
   --password="${SIP_PASSWORD}" \
 "
