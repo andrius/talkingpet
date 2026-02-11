@@ -14,11 +14,11 @@ if [ "${DESTINATION}" == "" ]; then
 fi
 
 SIP_SERVER_HOST=${SIP_SERVER_HOST:-asterisk}
-SIP_SERVER_PORT=5060
+SIP_SERVER_PORT=${SIP_SERVER_PORT:-5060}
 SIP_PASSWORD=${SIP_PASSWORD:-asterisk}
 
 # udp, tcp
-SIP_TRANSPORT=${SIP_TRANSPORT:-udp}
+SIP_TRANSPORT=${SIP_SERVER_TRANSPORT:-${SIP_TRANSPORT:-udp}}
 
 # random ports in a range
 LOCAL_PORT=$(shuf -i 50001-55999 -n 1)
@@ -27,8 +27,8 @@ RTP_PORT=$(shuf -i 56001-59999 -n 1)
 pjsua \
 	--log-level=3 \
 	--app-log-level=3 \
-	--no-stderr 4
---color \
+	--no-stderr \
+	--color \
 	--light-bg \
 	--null-audio \
 	--snd-auto-close=0 \
